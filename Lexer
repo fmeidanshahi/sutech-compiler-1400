@@ -1,0 +1,10 @@
+public class Lexer{
+  static String[] keywords = {"for", "while", "if", "else", "then", "switch", "case", "break", "else if", "elseif", "static", "void", "public", "default", "continue", "return", "long", "int", "String", "char", "boolean", "double", "float"};
+  public static ArrayList<Token> tokenizer(String src) {
+    char[] source = src.toCharArray();
+    ArrayList<Token> tokens = new ArrayList();
+    Token current = new Token();
+  
+  }
+
+}
