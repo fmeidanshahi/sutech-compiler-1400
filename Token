@@ -1,0 +1,45 @@
+public class Token {
+    public enum TokenType {
+        None,
+        Identifier,
+        Keyword, 
+        operator,
+        literal,
+        delimeter
+    }
+
+    private String token;
+    private TokenType type;
+
+    public Token() {
+        clear();
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public TokenType getType() {
+        return type;
+    }
+
+    public void append(char ch) {
+        token += ch;
+    }
+
+    public void setType(TokenType type) {
+        this.type = type;
+    }
+
+    public void clear() {
+        this.token = "";
+        this.type = TokenType.None;
+    }
+
+    @Override
+    public String toString() {
+        return getType() + "(" + getToken() + ")";
+
+    }
+
+}
