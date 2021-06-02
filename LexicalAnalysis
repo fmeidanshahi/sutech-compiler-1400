@@ -14,7 +14,7 @@ public class LexicalAnalysis {
         String filePath = scanner.nextLine();
         
         String source = readFileAsString(filePath);
-        
+        ArrayList<Token> tokens = Lexer.tokenizer(source);
 
         
         
