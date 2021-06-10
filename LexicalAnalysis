@@ -12,12 +12,19 @@ public class LexicalAnalysis {
         System.out.print("Enter source file path: ");
         Scanner scanner = new Scanner(System.in);
         String filePath = scanner.nextLine();
-        
+   
         String source = readFileAsString(filePath);
         ArrayList<Token> tokens = Lexer.tokenizer(source);
-
-        
-        
+        System.out.println("\n***************Tokens***************");
+        for (int i = 0; i < tokens.size(); i++) {
+            System.out.println("Token " + i + " \t " + tokens.get(i).toString());
+        }
+        if (Lexer.error) {
+            System.out.println("Lexer found some unknown tokens!");
+            System.exit(0);
+        } else {
+            System.out.println("Lex Successful");
+        }
     }
 
     public static String readFileAsString(String fileName) {
