@@ -1,10 +1,220 @@
-public class Lexer{
-  static String[] keywords = {"for", "while", "if", "else", "then", "switch", "case", "break", "else if", "elseif", "static", "void", "public", "default", "continue", "return", "long", "int", "String", "char", "boolean", "double", "float"};
-  public static ArrayList<Token> tokenizer(String src) {
-    char[] source = src.toCharArray();
-    ArrayList<Token> tokens = new ArrayList();
-    Token current = new Token();
-  
-  }
+import java.util.ArrayList;
+import myscanner.Token.TokenType;
 
+
+public class Lexer {
+    static String[] keywords = {"for", "while", "if", "else", "then", "switch", "case", "break", "else if","class",
+    "elseif", "static", "void", "public", "default", "continue", "return", "long", "int", "String", "char", "boolean", "double", "float"};
+    static String[] boolean_literal={"true", "false"};
+    public static boolean error;
+    
+    public static ArrayList<Token> tokenizer(String src) {
+        error = false;
+        char[] source = src.toCharArray();
+        
+        ArrayList<Token> tokens = new ArrayList();
+        Token current = new Token();
+        boolean dotted = false;
+        
+        for (int i = 0; i < source.length; i++) {
+            switch (current.getType()) {
+                case None:
+                    switch (source[i]) {
+                        case '\"':
+                            current.append(source[i]);
+                            current.setType(TokenType.text);
+                            continue;
+                        case ' ':
+                        case '\n':
+                        case '\r':
+                        case '\t':
+                            continue;
+                        case '0':
+                        case '1':
+                        case '2':
+                        case '3':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                        case '8':
+                        case '9':
+                            current.append(source[i]);
+                            current.setType(TokenType.number);
+                            continue;
+                        case 'a':
+                        case 'b':
+                        case 'c':
+                        case 'd':
+                        case 'e':
+                        case 'f':
+                        case 'g':
+                        case 'h':
+                        case 'i':
+                        case 'j':
+                        case 'k':
+                        case 'l':
+                        case 'm':
+                        case 'n':
+                        case 'o':
+                        case 'p':
+                        case 'q':
+                        case 'r':
+                        case 's':
+                        case 't':
+                        case 'u':
+                        case 'v':
+                        case 'w':
+                        case 'x':
+                        case 'y':
+                        case 'z':
+                        case 'A':
+                        case 'B':
+                        case 'C':
+                        case 'D':
+                        case 'E':
+                        case 'F':
+                        case 'G':
+                        case 'H':
+                        case 'I':
+                        case 'J':
+                        case 'K':
+                        case 'L':
+                        case 'M':
+                        case 'N':
+                        case 'O':
+                        case 'P':
+                        case 'Q':
+                        case 'R':
+                        case 'S':
+                        case 'T':
+                        case 'U':
+                        case 'V':
+                        case 'W':
+                        case 'X':
+                        case 'Y':
+                        case 'Z':
+                            current.append(source[i]);
+                            current.setType(TokenType.Identifier);
+                            continue;
+                        case '{':
+                        case '}':
+                        case '(':
+                        case ')':
+                        case ':':
+                        case ';':
+                        case ',':
+                            current.append(source[i]);
+                            current.setType(TokenType.symbol);
+                            tokens.add(current);
+                            current = new Token();
+                            continue;
+                        case '%':
+                            current.append(source[i]);
+                            current.setType(TokenType.operator);
+                            tokens.add(current);
+                            current = new Token();
+                            continue;
+                        case'/':
+                        case'*':
+                        case'+':
+                        case'-':
+                        case'&':
+                        case'|':
+                        case'=':
+                        case'>':
+                        case'<':
+                        case'!':
+                            current.append(source[i]);
+                            current.setType(TokenType.operator);
+                            continue;
+                        default:
+                            current.append(source[i]);
+                            current.setType(TokenType.unknown);
+                            error = true;
+                            tokens.add(current);
+                            
+                            current = new Token();
+                            continue;
+                    }
+                case text:
+                    current.append(source[i]);
+                    if (source[i] == '\"') {
+                        tokens.add(current);
+                        
+                        current = new Token();
+                    }
+                    continue;
+                case number:
+                    if (source[i] >= '0' && source[i] <= '9') {
+                        current.append(source[i]);
+                    } else if (source[i] == '.' && !dotted) {
+                        current.append(source[i]);
+                        dotted = true;
+                    } else if (!current.getToken().endsWith(".")) {
+                        tokens.add(current);
+                        dotted = false;
+                        
+                        current = new Token();
+                        i--;
+                    } else {
+                        current.setType(TokenType.unknown);
+                        error = true;
+                        tokens.add(current);
+                        dotted = false;
+                        
+                        current = new Token();
+                        i--;
+                    }
+                    continue;
+                case Identifier:
+                    if ((source[i] >= '0' && source[i] <= '9') || (source[i] >= 'a' && source[i] <= 'z') || (source[i] >= 'A' && source[i] <= 'Z')) {
+                        current.append(source[i]);
+                    } else {
+                        if (contains(keywords, current.getToken())) {
+                            current.setType(TokenType.Keyword);
+                        } else if (contains(boolean_literal, current.getToken())) {
+                            current.setType(TokenType.boolean_literal);
+                        }
+                        tokens.add(current);
+                        
+                        current = new Token();
+                        i--;
+                    }
+                    continue;
+                case operator:
+                    
+                    
+                case comment:
+                    
+                
+            }
+        }
+        if (current.getType() == TokenType.Identifier) {
+            if (contains(keywords, current.getToken())) {
+                current.setType(TokenType.Keyword);
+            } else if (contains(boolean_literal, current.getToken())) {
+                current.setType(TokenType.boolean_literal);
+            } else {
+
+            }
+        }
+        
+        
+        return tokens;
+    }
+    
+    public static boolean contains(final String[] array, final String v) {
+
+        boolean result = false;
+
+        for (String i : array) {
+            if (i.equalsIgnoreCase(v)) {
+                result = true;
+                break;
+            }
+        }
+
+        return result;
+    }
 }
