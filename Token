@@ -1,11 +1,15 @@
 public class Token {
     public enum TokenType {
         None,
+        number,
+        text,
         Identifier,
         Keyword, 
+        symbol,
+        comment,
         operator,
-        literal,
-        delimeter
+        boolean_literal,
+        unknown
     }
 
     private String token;
@@ -41,5 +45,4 @@ public class Token {
         return getType() + "(" + getToken() + ")";
 
     }
-
 }
