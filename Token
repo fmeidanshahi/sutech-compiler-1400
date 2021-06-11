@@ -2,7 +2,7 @@ public class Token {
     public enum TokenType {
         None,
         number,
-        text,
+        String,
         Identifier,
         Keyword, 
         symbol,
