@@ -22,7 +22,7 @@ public class Lexer {
                     switch (source[i]) {
                         case '\"':
                             current.append(source[i]);
-                            current.setType(TokenType.text);
+                            current.setType(TokenType.String);
                             continue;
                         case ' ':
                         case '\n':
@@ -104,19 +104,21 @@ public class Lexer {
                         case ':':
                         case ';':
                         case ',':
+                        case'[':
+                        case']':
                             current.append(source[i]);
                             current.setType(TokenType.symbol);
                             tokens.add(current);
                             current = new Token();
                             continue;
                         case '%':
+                        case'*':
                             current.append(source[i]);
                             current.setType(TokenType.operator);
                             tokens.add(current);
                             current = new Token();
                             continue;
                         case'/':
-                        case'*':
                         case'+':
                         case'-':
                         case'&':
@@ -137,7 +139,7 @@ public class Lexer {
                             current = new Token();
                             continue;
                     }
-                case text:
+                case String:
                     current.append(source[i]);
                     if (source[i] == '\"') {
                         tokens.add(current);
@@ -183,10 +185,108 @@ public class Lexer {
                     }
                     continue;
                 case operator:
-                    
+                    if(current.getToken().equals("/")){
+                        if(source[i] == '/'){
+                            current.append(source[i]);
+                            current.setType(TokenType.comment);
+                            continue;
+                        }else if(source[i] == '*'){
+                            current.append(source[i]);
+                            current.setType(TokenType.comment);
+                            continue;
+                        }else{
+                            tokens.add(current);
+                            current = new Token();
+                            i--;
+                        }
+                        continue;
+                    }else if(current.getToken().equals("+")){
+                        if (source[i] == '+') {
+                        current.append(source[i]);
+                        tokens.add(current);
+                        
+                        current = new Token();
+                        }else {
+                        tokens.add(current);
+                        
+                        current = new Token();
+                        i--;
+                        }
+                        continue;
+                    }else if(current.getToken().equals("-")){
+                        if (source[i] == '-') {
+                        current.append(source[i]);
+                        tokens.add(current);
+                        
+                        current = new Token();
+                        }else {
+                        tokens.add(current);
+                        
+                        current = new Token();
+                        i--;
+                        }
+                        continue;
+                    }else if(current.getToken().equals("&")){
+                        if (source[i] == '&') {
+                        current.append(source[i]);
+                        tokens.add(current);
+                        
+                        current = new Token();
+                        }else {
+                            current.setType(TokenType.unknown);
+                            error = true;
+                            tokens.add(current);
+                        
+                            current = new Token();
+                            i--;
+                        }
+                        continue;
+                    }else if(current.getToken().equals("|")){
+                        if (source[i] == '|') {
+                        current.append(source[i]);
+                        tokens.add(current);
+                        
+                        current = new Token();
+                        }else {
+                            current.setType(TokenType.unknown);
+                            error = true;
+                            tokens.add(current);
+                        
+                            current = new Token();
+                            i--;
+                        }
+                        continue;
+                    }else if(current.getToken().equals("=") || current.getToken().equals("<") || current.getToken().equals(">") || current.getToken().equals("!")){
+                        if (source[i] == '=') {
+                        current.append(source[i]);
+                        tokens.add(current);
+                        
+                        current = new Token();
+                        }else {
+                        tokens.add(current);
+                        
+                        current = new Token();
+                        i--;
+                        }
+                        continue;
+                    }
                     
                 case comment:
-                    
+                    if(current.getToken().equals("//")){
+                        current.append(source[i]);
+                        if(source[i] == '\n'){
+                        tokens.add(current);
+                        
+                        current = new Token();
+                        }
+                    continue;
+                    }else if(current.getToken().equals("/*")){
+                        current.append(source[i]);
+                        if(source[i] == '*'){
+                            
+                        }
+                        continue;
+                    }
                 
             }
         }
@@ -198,6 +298,18 @@ public class Lexer {
             } else {
 
             }
+        }
+        
+        if (current.getType() == TokenType.String || (current.getType() == TokenType.number && current.getToken().endsWith(".")) ) {
+            current.setType(TokenType.unknown);
+            error = true;
+            tokens.add(current);
+            
+        } else if (current.getType() == TokenType.comment) {
+            //Comment Found and skipped
+        } else if (current.getType() != TokenType.None) {
+            tokens.add(current);
+            
         }
         
         
