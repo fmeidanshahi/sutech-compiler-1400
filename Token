@@ -7,10 +7,13 @@ public class Token {
         Keyword, 
         symbol,
         comment,
+        multiLineComment,
+        checkMultiLineComment,
         operator,
         boolean_literal,
         unknown
     }
+    
 
     private String token;
     private TokenType type;
