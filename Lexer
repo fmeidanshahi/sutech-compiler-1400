@@ -6,6 +6,7 @@ public class Lexer {
     static String[] keywords = {"for", "while", "if", "else", "then", "switch", "case", "break", "else if","class",
     "elseif", "static", "void", "public", "default", "continue", "return", "long", "int", "String", "char", "boolean", "double", "float"};
     static String[] boolean_literal={"true", "false"};
+    
     public static boolean error;
     
     public static ArrayList<Token> tokenizer(String src) {
@@ -192,7 +193,7 @@ public class Lexer {
                             continue;
                         }else if(source[i] == '*'){
                             current.append(source[i]);
-                            current.setType(TokenType.comment);
+                            current.setType(TokenType.checkMultiLineComment);
                             continue;
                         }else{
                             tokens.add(current);
@@ -272,45 +273,39 @@ public class Lexer {
                     }
                     
                 case comment:
-                    if(current.getToken().equals("//")){
-                        current.append(source[i]);
-                        if(source[i] == '\n'){
+                    current.append(source[i]);
+                    if(source[i] == '\n'){
                         tokens.add(current);
                         
                         current = new Token();
-                        }
+                    }
                     continue;
-                    }else if(current.getToken().equals("/*")){
-                        current.append(source[i]);
-                        if(source[i] == '*'){
-                            
-                        }
+                case checkMultiLineComment:
+                    current.append(source[i]);
+                    if(source[i] == '*'){
+                        current.setType(TokenType.multiLineComment);
                         continue;
                     }
-                
+                    continue;
+                case multiLineComment:
+                    if(source[i] == '*'){
+                        current.append(source[i]);
+                        
+                    }else if(source[i] == '/'){
+                        current.append(source[i]);
+                        tokens.add(current);
+                        
+                        current = new Token();
+                    }else{
+                        current.append(source[i]);
+                        current.setType(TokenType.checkMultiLineComment);
+                        continue;
+                    }
+                    continue;
+                    
             }
         }
-        if (current.getType() == TokenType.Identifier) {
-            if (contains(keywords, current.getToken())) {
-                current.setType(TokenType.Keyword);
-            } else if (contains(boolean_literal, current.getToken())) {
-                current.setType(TokenType.boolean_literal);
-            } else {
-
-            }
-        }
-        
-        if (current.getType() == TokenType.String || (current.getType() == TokenType.number && current.getToken().endsWith(".")) ) {
-            current.setType(TokenType.unknown);
-            error = true;
-            tokens.add(current);
-            
-        } else if (current.getType() == TokenType.comment) {
-            //Comment Found and skipped
-        } else if (current.getType() != TokenType.None) {
-            tokens.add(current);
-            
-        }
+       
         
         
         return tokens;
