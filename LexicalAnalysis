@@ -21,7 +21,7 @@ public class MyScanner {
         }
         if (Lexer.error) {
             System.out.println("Lexer found some unknown tokens!");
-            System.exit(0);
+            
         } else {
             System.out.println("Lex Successful");
         }
